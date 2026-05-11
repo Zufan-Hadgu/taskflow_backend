@@ -1,4 +1,4 @@
-import { Controller, Body, Post } from '@nestjs/common';
+import { Controller, Body, Post, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginUserDto } from 'src/auth/dto/login-user.dto';
 import { RegisterUserDto } from 'src/auth/dto/register-user.dto';
@@ -13,11 +13,7 @@ export class AuthController {
     @ApiOperation({ summary: 'User login' })
     @ApiBody({ type: LoginUserDto })
     async login(@Body() loginUserDto: LoginUserDto) {
-        const user = await this.authService.validateUser(loginUserDto.email, loginUserDto.password);
-        if (user === "Invalid credentials") {
-            return { message: user };
-        }
-        return this.authService.login(user);
+        return this.authService.login(loginUserDto);
     }
 
     @Post('register')
