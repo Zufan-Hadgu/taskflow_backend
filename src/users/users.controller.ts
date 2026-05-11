@@ -5,12 +5,14 @@ import { ApiTags } from '@nestjs/swagger';
 import { Body, Post } from '@nestjs/common';
 
 
+
 @ApiTags('users')
+@UseGuards(JwtAuthGuard)
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @UseGuards(JwtAuthGuard)
+
   @Get("profile")
   getProfile() {
     return this.usersService.getProfile();
