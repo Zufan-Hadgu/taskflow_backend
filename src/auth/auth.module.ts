@@ -10,7 +10,7 @@ import { TokenService } from './token.service';
   imports:[
     PassportModule,
     JwtModule.register({
-      secret: 'your-secret-key', // In production, use environment variables to store secrets
+      secret:process.env.JWT_SECRET || 'secretkey',
       signOptions: { expiresIn: '1h' },
     }),
 
