@@ -4,7 +4,6 @@ import { TokenService } from './token.service';
 import { LoginUserDto } from 'src/auth/dto/login-user.dto';
 import { RegisterUserDto } from 'src/auth/dto/register-user.dto';
 import { UsersService } from 'src/users/users.service';
-import { access } from 'fs';
 
 @Injectable()
 export class AuthService {
