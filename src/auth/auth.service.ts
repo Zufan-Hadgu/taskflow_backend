@@ -3,49 +3,49 @@ import { JwtService } from '@nestjs/jwt';
 import { TokenService } from './token.service';
 import { LoginUserDto } from 'src/auth/dto/login-user.dto';
 import { RegisterUserDto } from 'src/auth/dto/register-user.dto';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class AuthService {
-    constructor(private tokenService: TokenService) {}
-    private users: any[] = []
+    constructor(
+        private tokenService: TokenService,
+        private userService: UsersService
 
-    async validateUser(email: string, password: string): Promise<any> {
-
-            if (email !== 'zufanhadgu1@gmail.com' && password !== '12341234') {
-                throw new UnauthorizedException('Invalid credentials');
-               
-            }  
-            return { id: '1', email,};
-    }
-       
+    ) {}
 
     async login(loginUserDto: LoginUserDto) {
         const { email, password } = loginUserDto;
-        const user = await this.validateUser(email, password);
-        const payload = 
-        { 
-            sub: user.id,
-            email: user.email 
-        };   
+        const user =  await this.userService.validateUser(email, password);
+        if (!user) {
+            throw new UnauthorizedException('Invalid credentials');
+        }
+        const { password: _, ...result } = user;
+        
         return {
-            access_token: this.tokenService.generateAccessToken(payload),
-        };   
+        user: result,
+        access_token: this.tokenService.generateAccessToken({
+            sub: user.id, 
+            email: user.email
+        }),
+        };  
     }
 
     async register(registerUserDto: RegisterUserDto) {
-
-        const { name, email, password, confirmPassword } = registerUserDto;
-
-        if (password !== confirmPassword) {
-            throw new BadRequestException('Passwords do not match');
+        const { name, email, password } = registerUserDto;
+    
+        const user = await this.userService.createUser(
+            name,
+            email, 
+            password, 
+        
+        );
+        const {password: _, ...result} = user;
+        return {
+            user:result,
+            access_token: this.tokenService.generateAccessToken({
+                 sub: user.id, 
+                email: user.email
+            }),
         }
-        const newUser = {
-            id: Date.now().toString(),
-            name: registerUserDto.name,
-            email: registerUserDto.email,
-            password: registerUserDto.password, 
-        };
-        this.users.push(newUser);
-        return newUser;
     }
 }

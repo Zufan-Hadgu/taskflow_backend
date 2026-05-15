@@ -11,6 +11,17 @@ async function bootstrap() {
     .setTitle('Projects API')
     .setDescription('API for managing projects')
     .setVersion('1.0')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        name: 'JWT',
+        description: 'Enter JWT token',
+        in: 'header',
+      },
+      'JWT-auth', 
+    )
     .build();
 
     app.useGlobalPipes(

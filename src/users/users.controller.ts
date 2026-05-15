@@ -3,6 +3,7 @@ import { UsersService } from './users.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { ApiTags } from '@nestjs/swagger';
 import { Body, Post } from '@nestjs/common';
+import { Request } from '@nestjs/common';
 
 
 
@@ -14,7 +15,7 @@ export class UsersController {
 
 
   @Get("profile")
-  getProfile() {
-    return this.usersService.getProfile();
+  getProfile(@Request() req) {
+    return this.usersService.getProfile(req.user.id);
   }
 }
