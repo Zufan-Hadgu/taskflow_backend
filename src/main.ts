@@ -3,6 +3,8 @@ import { AppModule } from './app.module';
 
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
+import helmet from 'helmet';
+import {ResponseInterceptor} from './common/interceptors/response.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -31,6 +33,15 @@ async function bootstrap() {
       transform: true, // transform payloads to DTO instances
     }),
   );
+   app.enableCors({
+    origin:"*",
+    methods:"GET,HEAD,PUT,PATCH,POST,DELETE",
+    credentials:true,
+   })
+
+   app.use(helmet())
+
+   app.useGlobalInterceptors(new ResponseInterceptor());
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document); 
