@@ -25,7 +25,8 @@ export class AuthService {
         user: result,
         access_token: this.tokenService.generateAccessToken({
             sub: user.id, 
-            email: user.email
+            email: user.email,
+            role: user.role
         }),
         };  
     }
@@ -43,8 +44,9 @@ export class AuthService {
         return {
             user:result,
             access_token: this.tokenService.generateAccessToken({
-                 sub: user.id, 
-                email: user.email
+                sub: user.id, 
+                email: user.email,
+                role: user.role
             }),
         }
     }

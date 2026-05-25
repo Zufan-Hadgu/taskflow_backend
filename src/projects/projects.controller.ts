@@ -8,7 +8,7 @@ import { ApiOperation, ApiQuery } from '@nestjs/swagger';
 import { Project } from './entities/project.entity';
 import { CreateProjectWithTaskDto } from './dto/create-task-with-dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { CurrentUser } from 'src/common/decorator';
+import { CurrentUser } from 'src/common/decorator/decorator';
 
 @ApiTags('projects')
 @UseGuards(JwtAuthGuard)
@@ -70,14 +70,14 @@ export class ProjectsController {
     @CurrentUser() user: { id: string; email: string }
     ) {
     return this.projectsService.remove(id,user.id);
-  }
-  @ApiOperation({ summary: 'Create a project with a first task' })
-  @ApiBody({ type: CreateProjectWithTaskDto })
-  @Post('with-task')
-  async createWithFirstTask(
-    @Body() createProjectWithTaskDto: CreateProjectWithTaskDto,
-    @CurrentUser() user: { id: string; email: string }
-  ) {
-    return this.projectsService.createWithFirstTask(createProjectWithTaskDto, user.id);
-  }
+    }
+    @ApiOperation({ summary: 'Create a project with a first task' })
+    @ApiBody({ type: CreateProjectWithTaskDto })
+    @Post('with-task')
+    async createWithFirstTask(
+        @Body() createProjectWithTaskDto: CreateProjectWithTaskDto,
+        @CurrentUser() user: { id: string; email: string }
+    ) {
+        return this.projectsService.createWithFirstTask(createProjectWithTaskDto, user.id);
+    }
 }
