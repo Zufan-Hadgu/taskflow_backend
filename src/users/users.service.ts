@@ -46,6 +46,7 @@ export class UsersService {
     if (!user) return null;
 
     Object.assign(user, data);
+    await this.userRepo.save(user);
     return user;
   }
 

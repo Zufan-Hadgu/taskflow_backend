@@ -1,5 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { Project } from '../../projects/entities/project.entity';
+import { Role } from '../../common/decorator/roles.decorator';
 
 @Entity()
 export class User {
@@ -14,6 +15,13 @@ export class User {
 
   @Column({nullable:true})
   name: string;
+
+  @Column({
+    type: 'enum',
+    enum: Role,
+    default: Role.User,
+  })
+  role: Role
 
   @CreateDateColumn()
   createdAt: Date;
