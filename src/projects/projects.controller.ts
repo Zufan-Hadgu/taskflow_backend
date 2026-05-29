@@ -5,7 +5,6 @@ import { ProjectsService } from './projects.service';
 import { Get,Post,Patch,Delete,Param,Body} from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiParam, ApiTags } from '@nestjs/swagger';
 import { ApiOperation, ApiQuery } from '@nestjs/swagger';
-import { Project } from './entities/project.entity';
 import { CreateProjectWithTaskDto } from './dto/create-task-with-dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CurrentUser } from 'src/common/decorator/decorator';
