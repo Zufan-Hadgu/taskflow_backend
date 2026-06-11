@@ -122,7 +122,7 @@ describe('ProjectsService', () => {
 
       mockProjectRepo.find.mockResolvedValue(projects);
 
-      const result = await service.findAll(userId);
+      const result = await service.findAllUserProjects(userId);
       expect(result).toEqual(projects);
     });
   });
