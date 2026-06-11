@@ -1,4 +1,4 @@
-import { Controller, Query, Req, UseGuards } from '@nestjs/common';
+import { Controller, Query, Req, UseGuards, UseInterceptors } from '@nestjs/common';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { ProjectsService } from './projects.service';
@@ -8,31 +8,52 @@ import { ApiOperation, ApiQuery } from '@nestjs/swagger';
 import { CreateProjectWithTaskDto } from './dto/create-task-with-dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CurrentUser } from 'src/common/decorator/decorator';
+import { CacheInterceptor } from "@nestjs/cache-manager";
+import { Role, Roles } from 'src/common/decorator/roles.decorator';
+import { PaginationDto } from 'src/common/pagination/pagination.dto';
 
 @ApiTags('projects')
 @UseGuards(JwtAuthGuard)
 @Controller('projects')
 @ApiBearerAuth('JWT-auth')
+@UseInterceptors(CacheInterceptor) // Apply the interceptor to catch errors
 export class ProjectsController {
     constructor(private readonly projectsService: ProjectsService) {}
 
-    @ApiOperation({ summary: 'Get all projects' })
+    @ApiOperation({ summary: 'Get user projects' })
     @ApiQuery({ name: 'search', required: false })
-    @Get () // to query search for projects by name or description
-    findAll(
+    @Get ('me') // to query search for projects by name or description
+    findAllUserProjects(
+     
         @CurrentUser() user: {id:string; email:string},
         @Query('search')search?: string,
         
     ){
-        return this.projectsService.findAll(user.id,search);
+        console.log('Controller hit');
+        return this.projectsService.findAllUserProjects(user.id,search);
 
     }
+    @Roles(Role.Admin)
+    @ApiOperation({ summary: 'Get all projects' })
+    @ApiQuery({ name: 'search', required: false })
+    @Get () // to query search for projects by name or description
+    findAllProjects(
+        @Query() dto: PaginationDto,
+        @Query('search')search?: string,
+        
+    ){
+        console.log("DTO",dto)
+        return this.projectsService.findAll(dto, search);
+    }
+
+    
+
     @ApiOperation({ summary: 'Get a project by ID' })
     @ApiQuery({ name: 'id', required: true })
     @Get (":id") // to query a project by id
     findOne(
         @CurrentUser() user: { id: string; email: string },
-        @Query('id') id: string,
+        @Param('id') id: string,
 
     ){
         return this.projectsService.findOne(id,user.id);
@@ -40,7 +61,6 @@ export class ProjectsController {
 
     @Post ()
     @ApiOperation({ summary: 'Create a new project' })
-    @Post()
     async create(
         @Body() creatProjectDto: CreateProjectDto,
         @CurrentUser() user: { id: string; email: string }
@@ -80,3 +100,4 @@ export class ProjectsController {
         return this.projectsService.createWithFirstTask(createProjectWithTaskDto, user.id);
     }
 }
+

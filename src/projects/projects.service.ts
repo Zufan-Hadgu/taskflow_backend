@@ -7,6 +7,8 @@ import { UpdateProjectDto } from './dto/update-project.dto';
 import { CreateProjectWithTaskDto } from './dto/create-task-with-dto';
 import { Task } from 'src/tasks/entities/task.entity';
 import { CreateTaskDto } from 'src/tasks/dto/create-task.dto';
+import { PaginationDto } from 'src/common/pagination/pagination.dto';
+import { paginateResult } from 'src/common/pagination/paginated-result';
 
 @Injectable()
 export class ProjectsService {
@@ -19,7 +21,7 @@ export class ProjectsService {
         private datasource: DataSource,
     ) {}
 
-    findAll(userId: string, search?: string) {
+    findAllUserProjects(userId: string, search?: string) {
         if (search) {
             return this.projectRepo.find({
                 where: {
@@ -28,14 +30,57 @@ export class ProjectsService {
                 },
             });
         }
-        return this.projectRepo.find({ where: { user: { id: userId } } });
+              return this.projectRepo.find({ where: { userId } });
     }
-        
+        async findAll(
+        paginationDto: PaginationDto,
+        search?: string,
+        ) {
+            console.log("Service hit");
+        const { page, limit } = paginationDto;
+
+        const [projects, total] =
+            await this.projectRepo.findAndCount({
+            where: search
+                ? {
+                    name: ILike(`%${search}%`),
+                }
+                : {},
+            relations: {
+                user: true,
+            },
+            skip: (page - 1) * limit,
+            take: limit,
+            order: {
+                id: 'DESC',
+            },
+            });
+
+        return paginateResult(
+            [projects, total],
+            page,
+            limit,
+        );
+        }
+                
 
     findOne(id: string, userId: string) {
         return this.projectRepo.findOne({
-            where: { id, user: { id: userId } },
+            where: { id, userId },
         });
+    }
+    findAndcount(userId:string,search?:string,page:number=1,limit:number=10){
+        const skip = (page - 1) * limit;
+        const query = this.projectRepo.createQueryBuilder('project')
+            .where('project.userId = :userId', { userId })
+            .skip(skip)
+            .take(limit);
+
+        if (search) {
+            query.andWhere('project.name ILIKE :search', { search: `%${search}%` });
+        }
+
+        return query.getManyAndCount();
     }
 
     async createTask(

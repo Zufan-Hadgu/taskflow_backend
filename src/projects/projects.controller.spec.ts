@@ -40,7 +40,7 @@ describe('ProjectsController', () => {
       ];
       mockProjectsService.findAll.mockResolvedValue(projects);
 
-      const result = await controller.findAll(mockUser);
+      const result = await controller.findAllUserProjects(mockUser);
       expect(result).toEqual(projects);
       expect(mockProjectsService.findAll).toHaveBeenCalledWith('user-1', undefined);
     });
@@ -48,7 +48,7 @@ describe('ProjectsController', () => {
     it('should pass the search query to the service', async () => {
       mockProjectsService.findAll.mockResolvedValue([]);
 
-      await controller.findAll(mockUser, 'test');
+      await controller.findAllUserProjects(mockUser, 'test');
       expect(mockProjectsService.findAll).toHaveBeenCalledWith('user-1', 'test');
     });
   });
