@@ -7,6 +7,8 @@ import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './jwt.strategy';
 import { TokenService } from './token.service';
 import { UsersModule } from 'src/users/users.module';
+import { EmailModule } from 'src/email/email.module';
+import { BullModule } from '@nestjs/bullmq';
 
 @Module({
   imports:[
@@ -20,6 +22,7 @@ import { UsersModule } from 'src/users/users.module';
         signOptions: { expiresIn: '1h' },
       }),
     }),
+    EmailModule
 
   ],
   providers: [AuthService,JwtStrategy,TokenService],
